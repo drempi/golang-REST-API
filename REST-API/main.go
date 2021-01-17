@@ -1,10 +1,10 @@
 package main
 
 import (
-	cryptpack "github.com/REST-API/cryptPack"
-	databasepack "github.com/REST-API/databasePack"
-	httppack "github.com/REST-API/httpPack"
-	querypack "github.com/REST-API/queryPack"
+	cryptpack "github.com/drempi/golang-REST-API/REST-API/cryptPack"
+	databasepack "github.com/drempi/golang-REST-API/REST-API/databasePack"
+	httppack "github.com/drempi/golang-REST-API/REST-API/httpPack"
+	querypack "github.com/drempi/golang-REST-API/REST-API/queryPack"
 
 	"fmt"
 	"time"

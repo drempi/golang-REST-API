@@ -1,7 +1,7 @@
 package httppack
 
 import (
-	querypack "github.com/REST-API/queryPack"
+	querypack "github.com/drempi/golang-REST-API/REST-API/queryPack"
 
 	"fmt"
 

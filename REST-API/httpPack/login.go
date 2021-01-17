@@ -1,8 +1,8 @@
 package httppack
 
 import (
-	cryptpack "github.com/REST-API/cryptPack"
-	databasepack "github.com/REST-API/databasePack"
+	cryptpack "github.com/drempi/golang-REST-API/REST-API/cryptPack"
+	databasepack "github.com/drempi/golang-REST-API/REST-API/databasePack"
 
 	"fmt"
 	"log"

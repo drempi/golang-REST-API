@@ -1,7 +1,7 @@
 package querypack
 
 import (
-	cryptpack "github.com/REST-API/cryptPack"
+	cryptpack "github.com/drempi/golang-REST-API/REST-API/cryptPack"
 
 	"encoding/json"
 	"log"
