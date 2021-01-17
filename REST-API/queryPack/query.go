@@ -1,7 +1,8 @@
 package querypack
 
 import (
-	cryptpack "daniel/project/cryptPack"
+	cryptpack "github.com/REST-API/cryptPack"
+
 	"encoding/json"
 	"log"
 	"time"

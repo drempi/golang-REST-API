@@ -1,8 +1,9 @@
 package httppack
 
 import (
-	cryptpack "daniel/project/cryptPack"
-	databasepack "daniel/project/databasePack"
+	cryptpack "github.com/REST-API/cryptPack"
+	databasepack "github.com/REST-API/databasePack"
+
 	"fmt"
 	"log"
 
@@ -46,6 +47,15 @@ func FindUser(acc Account) int {
 func CreateUser(acc Account) {
 	acc.Password = cryptpack.CreateHash2(acc.Password)
 	statement, err := databasepack.D.Prepare("INSERT INTO users (login, password, role) VALUES (\"" + acc.Login + "\", \"" + acc.Password + "\", 1)")
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	statement.Exec()
+}
+
+// RemoveUser deletes an account
+func RemoveUser(acc Account) {
+	statement, err := databasepack.D.Prepare("DELETE FROM users WHERE login = \"" + acc.Login + "\"")
 	if err != nil {
 		log.Fatal(err.Error())
 	}
