@@ -1,9 +1,9 @@
 package databasepack
 
 import (
-	"database/sql"
-
 	errorpack "github.com/drempi/golang-REST-API/REST-API/errorPack"
+
+	"database/sql"
 )
 
 // DEFAULT ENTRIES IN DISPATCHER:

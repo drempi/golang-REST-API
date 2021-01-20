@@ -1,14 +1,13 @@
 package databasepack
 
 import (
-	"strconv"
-
 	errorpack "github.com/drempi/golang-REST-API/REST-API/errorPack"
 
 	"database/sql"
 	"encoding/json"
 	"log"
 	"os"
+	"strconv"
 )
 
 type request struct {

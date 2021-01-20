@@ -1,9 +1,9 @@
 package databasepack
 
 import (
-	"strconv"
-
 	errorpack "github.com/drempi/golang-REST-API/REST-API/errorPack"
+
+	"strconv"
 )
 
 // DEFAULT ENTRIES IN LICENSER:
@@ -23,18 +23,18 @@ import (
 // And the following values:
 
 // 0 (superadmin): 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
-// 1 (admin): 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-// 2 (visitor): 1, 1, 0, 0, 1, 0, 0, 1, 0, 0
+// 1 (admin): 1, 1, 0, 1, 0, 1, 0, 1, 0
+// 2 (visitor): 0, 0, 0, 0, 0, 0, 0, 0, 0
 
 // InitLicenser it initializes the licenser table
 func InitLicenser() {
-	ExecCommand("CREATE TABLE IF NOT EXISTS licenser (id INTEGER PRIMARY KEY, creator_ BOOL, viewer_dispatcher BOOL, editor_dispatcher BOOL, licenser_dispatcher BOOL, viewer_licenser BOOL, editor_licenser BOOL, licenser_licenser BOOL, viewer_users BOOL, editor_users BOOL, licenser_users BOOL)")
+	ExecCommand("CREATE TABLE IF NOT EXISTS licenser (id INTEGER PRIMARY KEY, creator_ BOOL DEFAULT 0, licenser_ BOOL DEFAULT 0, viewer_dispatcher BOOL DEFAULT 0, editor_dispatcher BOOL DEFAULT 0, viewer_licenser BOOL DEFAULT 0, editor_licenser BOOL DEFAULT 0, viewer_users BOOL DEFAULT 0, editor_users BOOL DEFAULT 0)")
 	// adding 0 group (superadmin)
-	ExecCommand("INSERT INTO licenser (id, creator_, viewer_dispatcher, editor_dispatcher, licenser_dispatcher, viewer_licenser, editor_licenser, licenser_licenser, viewer_users, editor_users, licenser_users) VALUES (0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)")
+	ExecCommand("INSERT INTO licenser (id, creator_, licenser_, viewer_dispatcher, editor_dispatcher, viewer_licenser, editor_licenser, viewer_users, editor_users) VALUES (0, 1, 1, 1, 1, 1, 1, 1, 1)")
 	// adding 1 group (visitor)
-	ExecCommand("INSERT INTO licenser (id, creator_, viewer_dispatcher, editor_dispatcher, licenser_dispatcher, viewer_licenser, editor_licenser, licenser_licenser, viewer_users, editor_users, licenser_users) VALUES (1, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0)")
+	ExecCommand("INSERT INTO licenser (id, creator_, licenser_, viewer_dispatcher, editor_dispatcher, viewer_licenser, editor_licenser, viewer_users, editor_users) VALUES (1, 1, 0, 1, 0, 1, 0, 1, 0)")
 	// adding 2 group (admin)
-	ExecCommand("INSERT INTO licenser (id, creator_, viewer_dispatcher, editor_dispatcher, licenser_dispatcher, viewer_licenser, editor_licenser, licenser_licenser, viewer_users, editor_users, licenser_users) VALUES (2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)")
+	ExecCommand("INSERT INTO licenser (id, creator_, licenser_, viewer_dispatcher, editor_dispatcher, viewer_licenser, editor_licenser, viewer_users, editor_users) VALUES (2, 0, 0, 0, 0, 0, 0, 0, 0)")
 }
 
 // Allowed checks if the user is able to perform given action
@@ -71,14 +71,34 @@ func Allowed(roles []int, action string) bool {
 // AddPermission Adds permission for given action
 // on default its just 1 for superadmin and 0 for everyone else
 func AddPermission(action string) {
-	ExecCommand("ALTER TABLE licenser ADD " + action + " BOOL")
+	ExecCommand("ALTER TABLE licenser ADD " + action + " BOOL DEFAULT 0")
 	ExecCommand("UPDATE licenser SET " + action + " = 1 WHERE id = 0")
-	ExecCommand("UPDATE licenser SET " + action + " = 0 WHERE id != 0")
 }
 
 // AddDefaultPermissions adds 3 default permissions
 func AddDefaultPermissions(name string) {
 	AddPermission("viewer_" + name)
 	AddPermission("editor_" + name)
-	AddPermission("licenser_" + name)
+}
+
+// EditLicenser changes the licenser table
+func EditLicenser(group int, action string, val bool) {
+	if val {
+		ExecCommand("UPDATE licenser SET " + action + " = 1 WHERE id = " + strconv.Itoa(group))
+	} else {
+		ExecCommand("UPDATE licenser SET " + action + " = 0 WHERE id = " + strconv.Itoa(group))
+	}
+}
+
+// AddGroup adds a new empty group with certain id and with no licenses
+func AddGroup(id int) string {
+	command := "SELECT id FROM licenser WHERE id = " + strconv.Itoa(id)
+	_, err := D.Query(command)
+	if err == nil {
+		return "id already taken"
+	} else if id < 0 {
+		return "id has to be positive"
+	}
+	ExecCommand("INSERT licenser (id) VALUES (" + strconv.Itoa(id) + ")")
+	return "completed!"
 }

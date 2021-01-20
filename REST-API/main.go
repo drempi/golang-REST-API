@@ -31,7 +31,14 @@ func setupRoutes(app *fiber.App) {
 	app.Get("/page/get/:name/:lang/:offset/:amt", httppack.GetPage)
 	app.Post("/page/addtable", httppack.AddTablePage)
 	app.Post("/page/edit/:name", httppack.EditPage)
+	app.Get("/page/licenser/:group/:action/:val", httppack.LicensePage)
+	app.Get("/page/addgroupuser/:login/:group", httppack.AddGroupUserPage)
+	app.Get("/page/removegroupuser/:login/:group", httppack.RemoveGroupUserPage)
+	app.Get("/page/addgroup/:id", httppack.AddGroupPage)
 
+	app.Get("/log/changepassword/:login", httppack.ResetPasswordPage)
+	app.Get("/log/resetpasswordemail/:login", httppack.RandomPasswordEmailPage)
+	app.Get("/log/resetpassword/:login/:hash", httppack.RandomPasswordPage)
 	app.Post("/log/login", httppack.LoginPage)
 	app.Get("/log/logout", httppack.LogoutPage)
 	app.Post("/log/remove", httppack.RemovePage)
@@ -41,6 +48,11 @@ func setupRoutes(app *fiber.App) {
 
 func visit(c *fiber.Ctx) error {
 	fmt.Println("A visit has been spotted " + c.Method() + "   " + c.OriginalURL())
+
+	// If user wants to change the password, don't check other things
+	if len(c.OriginalURL()) >= 20 && c.OriginalURL()[0:21] == "/log/changepassword/" {
+		return c.Next()
+	}
 
 	var success bool
 	success, querypack.INFO = querypack.StringToQuery(c.Cookies("Visit"))

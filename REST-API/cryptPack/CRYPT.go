@@ -7,6 +7,7 @@ import (
 	"crypto/cipher"
 	"crypto/md5"
 	"encoding/hex"
+	"math/rand"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -87,4 +88,14 @@ func BigBase(B []byte) []byte {
 		RES[i] = (B[2*i]-65)*16 + B[2*i+1] - 65
 	}
 	return RES
+}
+
+// RandomString generates random string of some length
+func RandomString(n int) string {
+	var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+	s := make([]rune, n)
+	for i := range s {
+		s[i] = letters[rand.Intn(len(letters))]
+	}
+	return string(s)
 }
