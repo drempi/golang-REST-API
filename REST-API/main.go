@@ -13,17 +13,6 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-// DEBUG am i debugging?
-var DEBUG bool = false
-
-func debug(s string) {
-	fmt.Println("-------------    " + s + "    -------------")
-	for i := 0; i < len(s); i++ {
-		fmt.Print("=")
-	}
-	fmt.Println("====================================")
-}
-
 func main() {
 	databasepack.Init()
 	defer databasepack.D.Close()
@@ -39,6 +28,9 @@ func main() {
 func setupRoutes(app *fiber.App) {
 	app.Get("/page", httppack.HelloWorld)
 	app.Get("/page/test:val", httppack.TestPage)
+	app.Get("/page/get/:name/:lang/:offset/:amt", httppack.GetPage)
+	app.Post("/page/addtable", httppack.AddTablePage)
+	app.Post("/page/edit/:name", httppack.EditPage)
 
 	app.Post("/log/login", httppack.LoginPage)
 	app.Get("/log/logout", httppack.LogoutPage)
@@ -48,11 +40,10 @@ func setupRoutes(app *fiber.App) {
 }
 
 func visit(c *fiber.Ctx) error {
-	fmt.Println("A visit has been spotted")
+	fmt.Println("A visit has been spotted " + c.Method() + "   " + c.OriginalURL())
 
 	var success bool
 	success, querypack.INFO = querypack.StringToQuery(c.Cookies("Visit"))
-
 	// If certain conditions are not met, the user is moved to the logging in site.
 	if !success || querypack.INFO.Time.Before(time.Now()) {
 		c.Method("GET")
@@ -66,7 +57,6 @@ func visit(c *fiber.Ctx) error {
 		if !querypack.INFO.LoggedIn {
 			c.Path("/log")
 			c.Method("GET")
-
 		}
 	} else if !success {
 		querypack.INFO.URL = "/page"

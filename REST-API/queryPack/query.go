@@ -2,6 +2,7 @@ package querypack
 
 import (
 	cryptpack "github.com/drempi/golang-REST-API/REST-API/cryptPack"
+	errorpack "github.com/drempi/golang-REST-API/REST-API/errorPack"
 
 	"encoding/json"
 	"log"
@@ -16,7 +17,7 @@ type Query struct {
 	LoggedIn bool      `json:"logged_in"`
 	Login    string    `json:"login"`
 	Time     time.Time `json:"time"`
-	Role     int       `json:"role"`
+	Roles    []int     `json:"roles"`
 }
 
 // INFO its all there is!
@@ -25,10 +26,7 @@ var INFO Query
 // QueryToString converts query to encrypted string
 func QueryToString(Q Query) string {
 	message, err := json.Marshal(Q)
-	if err != nil {
-		log.Fatalln("json conversion failed")
-	}
-
+	errorpack.OK(&err)
 	var temp []byte
 	success, temp := cryptpack.Encrypt([]byte(message))
 	if !success {
@@ -42,12 +40,10 @@ func StringToQuery(s string) (bool, Query) {
 	var Q Query
 	success, message := cryptpack.Decrypt(cryptpack.BigBase([]byte(s)))
 	if !success {
-		Q.LoggedIn = true
 		return false, Q
 	}
 	err := json.Unmarshal([]byte(message), &Q)
 	if err != nil {
-		Q.LoggedIn = true
 		return false, Q
 	}
 	return true, Q
